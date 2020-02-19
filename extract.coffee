@@ -8,7 +8,7 @@ getData = () ->
     a = "<table>"
     JSON.parse(res).data.forEach (prov) ->
       if prov.attackers_count < 32
-        a = a.concat("<tr><td>#{prov.arena_name}</td><td>#{prov.name}</td><td>#{if prov.owner then prov.owner.elo_rating_10 else ''}</td><tr>")
+        a = a.concat("<tr><td>#{prov.arena_name}</td><td>#{prov.primetime}</td><td>#{prov.name}</td><td>#{if prov.owner then prov.owner.elo_rating_10 else ''}</td><tr>")
     a.concat("</table>")
 
 app.get '/', (req, res) ->
