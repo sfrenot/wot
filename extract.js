@@ -75,7 +75,18 @@ const delay = function () {
 };
 
 const getData2 = async function() {
-  const a = "<table>\n  <colgroup>\n   <col span=\"1\" style=\"width: 130px;\">\n   <col span=\"1\">\n   <col span=\"1\" style=\"width: 330px;\">\n   <col span=\"1\">\n  </colgroup>\n  <tr style=\"text-align: left;\">\n    <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants</th>\n  </tr>";
+  const a = `
+  <table>
+    <colgroup>
+    <col span=\"1\" style=\"width: 130px;\">
+    <col span=\"1\">  
+    <col span=\"1\" style=\"width: 330px;\">
+    <col span=\"1\">
+    </colgroup>
+    <tr style=\"text-align: left;\">
+      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants ${(new Date()).toLocaleTimeString()}</th>
+    </tr>
+  `;
   const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
   const provinces = _.sortBy(JSON.parse(provincesData.body).data, ['primetime', 'is_battle_offset', 'attackers_count']);
   const results = [a];

@@ -11,7 +11,6 @@ while true; do
   fi
   mv ./index.new.html ./public/index.html
 
-  #sleep `jot -r 1 400 600`
   sleep 30
 done
 ~     
