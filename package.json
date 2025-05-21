@@ -1,6 +1,7 @@
 {
+  "type": "module",
   "dependencies": {
     "express": "^5.1.0",
-    "request-promise": "^4.2.6"
+    "got": "^14.4.7"
   }
 }
