@@ -42,9 +42,10 @@ const traduction = {
   'Serene Coast': 'Plage sereine'
 };
 
-const displayLink = function(elo, tag, id) {
+const displayLink = function(elo, tag, id, isRed) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
-  return "[<a target=\"_blank\" href=\"https://eu.wargaming.net/clans/wot/" + id + "\">" + elo + "-" + tag + "</a>]";
+  const redColor = isRed ? "red" : "black"; 
+  return `[<a style='color: ${redColor}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${elo}-${tag}</a>]`;
 };
 
 const getInfo = async function(prov) {
@@ -54,9 +55,9 @@ const getInfo = async function(prov) {
   let Fws = false;
 
   const prets = res.pretenders.map(function(pret) {
-    if (pret.tag === 'GROUT') {
+    if (pret.tag === 'GR0UT') {
       Fws = true;
-      return "<b style='color: red'>GROUT</b>";
+      return `<b style='color: red'>${displayLink(pret.elo_rating, pret.tag, pret.id, true)}</b>`;
     } else {
       return displayLink(pret.elo_rating, pret.tag, pret.id);
     }
