@@ -43,7 +43,8 @@ const traduction = {
 };
 
 const displayLink = function(elo, tag, id) {
-  return "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
+  // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
+  return "[<a target=\"_blank\" href=\"https://eu.wargaming.net/clans/wot/" + id + "\">" + elo + "-" + tag + "</a>]";
 };
 
 const getInfo = async function(prov) {
@@ -84,7 +85,7 @@ const getData2 = async function() {
     <col span=\"1\">
     </colgroup>
     <tr style=\"text-align: left;\">
-      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants ${(new Date()).toLocaleTimeString()}</th>
+      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants (${(new Date()).toLocaleTimeString()})</th>
     </tr>
   `;
   const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
