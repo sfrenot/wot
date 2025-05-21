@@ -54,7 +54,7 @@ const getInfo = async function(prov) {
   let Fws = false;
 
   const prets = res.pretenders.map(function(pret) {
-    if (pret.tag === 'GROUT') {
+    if (pret.tag === 'GR0UT') {
       Fws = true;
       return "<b style='color: red'>GROUT</b>";
     } else {
