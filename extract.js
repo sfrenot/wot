@@ -42,10 +42,10 @@ const traduction = {
   'Serene Coast': 'Plage sereine'
 };
 
-const displayLink = function(elo, tag, id, isRed) {
+const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
   const redColor = isRed ? "red" : "black"; 
-  return `[<a style='color: ${redColor}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${elo}-${tag}</a>]`;
+  return `[${elo}/<a style='color: ${redColor}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
 };
 
 const getInfo = async function(prov) {
@@ -57,17 +57,22 @@ const getInfo = async function(prov) {
   const prets = res.pretenders.map(function(pret) {
     if (pret.tag === 'GR0UT') {
       Fws = true;
-      return `<b style='color: red'>${displayLink(pret.elo_rating, pret.tag, pret.id, true)}</b>`;
+      return `<b style='color: red'>${displayLink(pret.elo_rating, pret.tag, pret.id, true, pret.arena_battles_count, pret.arena_wins_percent)}</b>`;
     } else {
-      return displayLink(pret.elo_rating, pret.tag, pret.id);
+      return displayLink(pret.elo_rating, pret.tag, pret.id, false, pret.arena_battles_count, pret.arena_wins_percent);
     }
   });
 
   if (prov.attackers_count < 32 || Fws) {
-    owner = prov.owner ? displayLink(prov.owner.elo_rating_10, prov.owner.tag, prov.owner.id) : "";
+    owner = prov.owner ? displayLink(prov.owner.elo_rating_10, prov.owner.tag, prov.owner.id, false, res.owner.arena_battles_count,res.owner.arena_wins_percent) : "";
   }
   
-  return "<tr style='background-color: " + colors[prov.primetime + prov.is_battle_offset] + "'><td>" + (traduction[prov.arena_name] != null ? traduction[prov.arena_name] : prov.arena_name) + "</td><td>" + (formatDate(prov.primetime, prov.is_battle_offset)) + "</td><td>" + prov.name + " (" + owner + " / " + prov.attackers_count + ")</td><td>" + (prets.join(', ')) + "</td></tr>";
+  return `
+    <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
+    <td>${traduction[prov.arena_name] != null ? traduction[prov.arena_name] : prov.arena_name}</td>
+    <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
+    <td>${prov.name} ${owner}</td>
+    <td>${prets.join('<BR>')}</td></tr>`;
 };
 
 const delay = function () {
@@ -82,7 +87,7 @@ const getData2 = async function() {
     <colgroup>
     <col span=\"1\" style=\"width: 130px;\">
     <col span=\"1\">  
-    <col span=\"1\" style=\"width: 330px;\">
+    <col span=\"1\" style=\"width: 370px;\">
     <col span=\"1\">
     </colgroup>
     <tr style=\"text-align: left;\">
@@ -98,6 +103,7 @@ const getData2 = async function() {
     // await delay();
     const info = await getInfo(province);
     results.push(info);
+    // break;
   }
 
   results.push("</table>");
