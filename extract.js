@@ -21,26 +21,26 @@ const formatDate = function(date, offset) {
 };
 
 const cartes = {
-  "Abbey": {"traduction": "Abbaye", "base": ""},
-  "Cliff": {"traduction": "Falaise", "base": ""},
-  "El Halluf": {"traduction": "El Halluf", "base": ""},
-  "Ensk": {"traduction": "Ensk", "base": ""},
-  "Fisherman's Bay": {"traduction": "Baie du pêcheur", "base": ""},
-  "Highway": {"traduction": "Autoroute", "base": ""},
-  "Himmelsdorf": {"traduction": "Himmelsdorf", "base": ""},
-  "Karelia": {"traduction": "Carélie", "base": ""},
-  "Lakeville": {"traduction": "Lakeville", "base": ""},
-  "Live Oaks": {"traduction": "Live Oaks", "base": ""},
-  "Malinovka": {"traduction": "Malinovka", "base": ""},
-  "Mines": {"traduction": "Mines", "base": ""},
-  "Murovanka": {"traduction": "Murovanka", "base": ""},
-  "Pearl River": {"traduction": "Rivière de perles", "base": ""},
-  "Prokhorovka": {"traduction": "Prokhorovka", "base": ""},
-  "Redshire": {"traduction": "Redshire", "base": ""},
-  "Sand River": {"traduction": "Rivière de sable", "base": ""},
-  "Serene Coast": {"traduction": "Plage sereine", "base": ""},
-  "Steppes": {"traduction": "Steppes", "base": ""},
-  "Westfield": {"traduction": "Westfield", "base": ""}
+  "Abbey": {"traduction": "Abbaye", "base": "S"},
+  "Cliff": {"traduction": "Falaise", "base": "S"},
+  "El Halluf": {"traduction": "El Halluf", "base": "S"},
+  "Ensk": {"traduction": "Ensk", "base": "N"},
+  "Fisherman's Bay": {"traduction": "Baie du pêcheur", "base": "N"},
+  "Highway": {"traduction": "Autoroute", "base": "N"},
+  "Himmelsdorf": {"traduction": "Himmelsdorf", "base": "S"},
+  "Karelia": {"traduction": "Carélie", "base": "N"},
+  "Lakeville": {"traduction": "Lakeville", "base": "N"},
+  "Live Oaks": {"traduction": "Live Oaks", "base": "S"},
+  "Malinovka": {"traduction": "Malinovka", "base": "S"},
+  "Mines": {"traduction": "Mines", "base": "S"},
+  "Murovanka": {"traduction": "Murovanka", "base": "N"},
+  "Pearl River": {"traduction": "Rivière de perles", "base": "N"},
+  "Prokhorovka": {"traduction": "Prokhorovka", "base": "N"},
+  "Redshire": {"traduction": "Redshire", "base": "S"},
+  "Sand River": {"traduction": "Rivière de sable", "base": "E"},
+  "Serene Coast": {"traduction": "Plage sereine", "base": "S"},
+  "Steppes": {"traduction": "Steppes", "base": "S"},
+  "Westfield": {"traduction": "Westfield", "base": "S"}
 };
 
 
@@ -89,7 +89,7 @@ const getInfo = async function(prov) {
 
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
-    <td>${cartes[prov.arena_name].traduction}</td>
+    <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
     <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
     <td>${prov.name} ${owner}</td>
     <td>${prets.join('<BR>')}</td></tr>`;
@@ -108,13 +108,13 @@ const getData2 = async function() {
   </div>
   <table>
     <colgroup>
-    <col span=\"1\" style=\"width: 130px;\">
+    <col span=\"1\" style=\"width: 140px;\">
     <col span=\"1\">  
     <col span=\"1\" style=\"width: 370px;\">
     <col span=\"1\">
     </colgroup>
     <tr style=\"text-align: left;\">
-      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants</th>
+      <th>Carte (Base Verte)</th><th>Heure</th><th>Province</th><th>Attaquants</th>
     </tr>
   `;
   const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
