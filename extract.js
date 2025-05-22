@@ -20,6 +20,30 @@ const formatDate = function(date, offset) {
   }
 };
 
+const cartes = {
+  "Abbey": {"traduction": "Abbaye", "base": ""},
+  "Cliff": {"traduction": "Falaise", "base": ""},
+  "El Halluf": {"traduction": "El Halluf", "base": ""},
+  "Ensk": {"traduction": "Ensk", "base": ""},
+  "Fisherman's Bay": {"traduction": "Baie du pêcheur", "base": ""},
+  "Highway": {"traduction": "Autoroute", "base": ""},
+  "Himmelsdorf": {"traduction": "Himmelsdorf", "base": ""},
+  "Karelia": {"traduction": "Carélie", "base": ""},
+  "Lakeville": {"traduction": "Lakeville", "base": ""},
+  "Live Oaks": {"traduction": "Live Oaks", "base": ""},
+  "Malinovka": {"traduction": "Malinovka", "base": ""},
+  "Mines": {"traduction": "Mines", "base": ""},
+  "Murovanka": {"traduction": "Murovanka", "base": ""},
+  "Pearl River": {"traduction": "Rivière de perles", "base": ""},
+  "Prokhorovka": {"traduction": "Prokhorovka", "base": ""},
+  "Redshire": {"traduction": "Redshire", "base": ""},
+  "Sand River": {"traduction": "Rivière de sable", "base": ""},
+  "Serene Coast": {"traduction": "Plage sereine", "base": ""},
+  "Steppes": {"traduction": "Steppes", "base": ""},
+  "Westfield": {"traduction": "Westfield", "base": ""}
+};
+
+
 const colors = {
   '16:00:00false': '#eaff67',
   '16:00:00true': '#ffca3e',
@@ -35,17 +59,7 @@ const colors = {
   '21:00:00true': '#cce8cc'
 };
 
-const traduction = {
-  'Abbey': 'Abbaye',
-  'Cliff': 'Falaise',
-  'Fisherman\'s Bay': 'Baie du pêcheur',
-  'Karelia': 'Carélie',
-  'Highway': 'Autoroute',
-  'Pearl River': 'Rivière de perles',
-  'Serene Coast': 'Plage sereine',
-  'Sand River': 'Rivière de sable',
-  'Serene Coast': 'Plage sereine'
-};
+
 
 const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
@@ -75,7 +89,7 @@ const getInfo = async function(prov) {
 
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
-    <td>${traduction[prov.arena_name] != null ? traduction[prov.arena_name] : prov.arena_name}</td>
+    <td>${cartes[prov.arena_name].traduction}</td>
     <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
     <td>${prov.name} ${owner}</td>
     <td>${prets.join('<BR>')}</td></tr>`;
