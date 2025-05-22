@@ -89,6 +89,9 @@ const delay = function () {
 
 const getData2 = async function() {
   const a = `
+  <div style=" font-size: 20px; font-weight: bold;">
+  ${groutDesc.tag} - ${groutDesc.elo_rating_10}  / ${groutDesc.battles_count_10} / ${groutDesc.wins_percent_10} --  ${(new Date()).toLocaleTimeString()}
+  </div>
   <table>
     <colgroup>
     <col span=\"1\" style=\"width: 130px;\">
@@ -97,7 +100,7 @@ const getData2 = async function() {
     <col span=\"1\">
     </colgroup>
     <tr style=\"text-align: left;\">
-      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants (${(new Date()).toLocaleTimeString()})</th>
+      <th>Carte</th><th>Heure</th><th>Province</th><th>Attaquants</th>
     </tr>
   `;
   const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
