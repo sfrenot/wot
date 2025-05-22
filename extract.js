@@ -6,6 +6,9 @@ import _ from 'lodash';
 const DELAY = 10;
 
 const app = express();
+const CLAN_ID = 500165786;
+
+const groutDesc = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${CLAN_ID}`).json();
 
 const formatDate = function(date, offset) {
   const heure = String(Number(date.substring(0, 2)) + 2);
@@ -18,6 +21,8 @@ const formatDate = function(date, offset) {
 };
 
 const colors = {
+  '16:00:00false': '#eaff67',
+  '16:00:00true': '#ffca3e',
   '17:00:00false': '#eaea67',
   '17:00:00true': '#bdca3e',
   '18:00:00false': '#7fa3bf',
@@ -44,7 +49,8 @@ const traduction = {
 
 const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
-  const redColor = isRed ? "red" : "black"; 
+  const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
+
   return `[${elo}/<a style='color: ${redColor}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
 };
 
@@ -66,7 +72,7 @@ const getInfo = async function(prov) {
   if (prov.attackers_count < 32 || Fws) {
     owner = prov.owner ? displayLink(prov.owner.elo_rating_10, prov.owner.tag, prov.owner.id, false, res.owner.arena_battles_count,res.owner.arena_wins_percent) : "";
   }
-  
+
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
     <td>${traduction[prov.arena_name] != null ? traduction[prov.arena_name] : prov.arena_name}</td>
@@ -117,8 +123,7 @@ app.get('/', function(req, res) {
   }).catch(function(err) {
     console.log(err);
     return res.send("Erreur");
-  }
-  );
+  });
 });
 
 export default app;
