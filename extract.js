@@ -63,9 +63,18 @@ const colors = {
 
 const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
-  const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
+  // const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
+  function getColor(elo) {
+    if (elo <= groutDesc.elo_rating_10) {
+      return "SpringGreen";
+    } else if (elo < groutDesc.elo_rating_10 +100) {
+      return "yellow";
+    } else {
+      return "red";
+    }
+  }
 
-  return `[${elo}/<a style='color: ${redColor}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
+  return `[${elo}/<a style='color: ${getColor(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
 };
 
 const getInfo = async function(prov) {
