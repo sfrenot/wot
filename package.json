@@ -2,6 +2,7 @@
   "type": "module",
   "dependencies": {
     "express": "^5.1.0",
-    "got": "^14.4.7"
+    "got": "^14.4.7",
+    "lodash": "^4.17.21"
   }
 }
