@@ -89,10 +89,12 @@ const getInfo = async function(prov) {
 
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
-    <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
-    <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
-    <td>${prov.name} ${owner}</td>
-    <td>${prets.join('<BR>')}</td></tr>`;
+      <td> <img src='${prov.arena_name.replace(/'/, '')}.png' width="60px" ></img></td>
+      <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
+      <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
+      <td>${prov.name} ${owner}</td>
+      <td>${prets.join('<BR>')}</td>
+    </tr>`;
 };
 
 const delay = function () {
@@ -108,13 +110,14 @@ const getData2 = async function() {
   </div>
   <table>
     <colgroup>
-    <col span=\"1\" style=\"width: 140px;\">
-    <col span=\"1\">  
-    <col span=\"1\" style=\"width: 370px;\">
-    <col span=\"1\">
+      <col span=\"1\" style=\"width: 60px;\"">
+      <col span=\"1\" style=\"width: 140px;\">
+      <col span=\"1\">  
+      <col span=\"1\" style=\"width: 370px;\">
+      <col span=\"1\">
     </colgroup>
     <tr style=\"text-align: left;\">
-      <th>Carte (Base Verte)</th><th>Heure</th><th>Province</th><th>Attaquants</th>
+      <th></th><th>Carte (Base Verte)</th><th>Heure</th><th>Province</th><th>Attaquants</th>
     </tr>
   `;
   const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
