@@ -10,6 +10,6 @@ while true; do
     exit 1
   fi
   mv ./index.new.html ./public/index.html
-  sleep 60
+  sleep 30
 done
 ~     
