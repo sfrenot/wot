@@ -2,6 +2,8 @@
 import express from 'express';
 import got from 'got';
 import _ from 'lodash';
+import fs from 'fs/promises';
+import provinces_pret from './provinces_pret.json' with { type: "json" };
 
 const DELAY = 10;
 
@@ -83,7 +85,7 @@ const getInfo = async function(prov) {
   let owner = '';
   let Fws = false;
 
-  const prets = res.pretenders.map(function(pret) {
+  let prets = res.pretenders.map(function(pret) {
     if (pret.tag === 'GR0UT') {
       Fws = true;
       return `<b style='color: red'>${displayLink(pret.elo_rating, pret.tag, pret.id, true, pret.arena_battles_count, pret.arena_wins_percent)}</b>`;
@@ -96,6 +98,12 @@ const getInfo = async function(prov) {
     owner = prov.owner ? displayLink(prov.owner.elo_rating_10, prov.owner.tag, prov.owner.id, false, res.owner.arena_battles_count,res.owner.arena_wins_percent) : "";
   }
 
+  if (_.isEmpty(prets)) {
+    prets=provinces_pret[prov.name] || [];
+  } else {
+    provinces_pret[prov.name] = prets;
+  }
+  
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
       <td> <img src='${prov.arena_name.replace(/'/, '')}.png' width="60px" ></img></td>
@@ -148,7 +156,10 @@ const getData2 = async function() {
 
 app.get('/', function(req, res) {
   return getData2().then(function(rep) {
-    return res.send(rep);
+    fs.writeFile('./provinces_pret.json', JSON.stringify(provinces_pret, null, 2))
+    .then(() => {
+      return res.send(rep);
+    })
   }).catch(function(err) {
     console.log(err);
     return res.send("Erreur");
