@@ -14,9 +14,9 @@ while true; do
       exit 1
     fi
     mv ./index.new.html ./public/index.html
-  fi 
-  echo "coucou"
-
+  else 
+    echo "coucou"
+  fi
   sleep 30
 done
 ~     
