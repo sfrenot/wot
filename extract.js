@@ -4,6 +4,7 @@ import got from 'got';
 import _ from 'lodash';
 import fs from 'fs/promises';
 import provinces_pret from './provinces_pret.json' with { type: "json" };
+import clan_results from './clan_results.json' with { type: "json" };
 
 const DELAY = 10;
 
@@ -119,13 +120,13 @@ const delay = function () {
     return setTimeout(res, DELAY);
   });
 };
-
+//   <table style=\"display: inline-block; vertical-align: top;\">
 const getData2 = async function() {
   const a = `
   <div style=" font-size: 20px; font-weight: bold;">
   ${groutDesc.tag} - ${groutDesc.elo_rating_10}  / ${groutDesc.battles_count_10} / ${groutDesc.wins_percent_10} --  ${(new Date()).toLocaleTimeString()}
   </div>
-  <table>
+  <table style=\"display: inline-block;\">
     <colgroup>
       <col span=\"1\" style=\"width: 60px;\"">
       <col span=\"1\" style=\"width: 140px;\">
@@ -151,6 +152,35 @@ const getData2 = async function() {
 
   results.push("</table>");
 
+  //Injection leaderboard
+  //Test 
+  //const results = []
+  results.push(`
+    <table style="display: inline-block; vertical-align: top; margin-left: 20px; text-align: center;">
+      <tr><th>Tag</th><th>Victoires</th><th>Défaites</th></tr>
+  `);
+
+  function getColorPwin(pwin) {
+    if (pwin >= 60) {
+      return "SpringGreen";
+    } else if (pwin >= 10) {
+      return "yellow";
+    } else {
+      return "red";
+    }
+  }
+
+  _.forEach(clan_results, (clan, tag) => {    
+    results.push(`
+      <tr style='border: 1; color: ${getColorPwin(clan.wins / (clan.wins + clan.losts) * 100)}' >
+        <td>[<a style='color: unset;' target='_blank' href='https://eu.wargaming.net/clans/wot/${clan.id}'> ${tag}</a>]</td>
+        <td>${clan.wins}</td>
+        <td>${clan.losts}</td>
+      </tr>
+    `);
+  })
+  
+  results.push("</table>");
   return results.join('\n');
 };
 
