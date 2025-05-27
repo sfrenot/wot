@@ -16,18 +16,24 @@ const getData2 = async function() {
                   validBattles
                   .map((data) => { return {"tag": data.enemy_clan.tag, "id": data.enemy_clan.id}} )
                 ), 'tag');
+  
 
-  clans.forEach((clan) => {
+
+  for (let clan of clans) {
+    const detail = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${clan.id}/`).json();
     const wins = validBattles.filter((data) => data.enemy_clan.tag === clan.tag && data.type === 'TOURNAMENT_BATTLE_WON').length;
     const losts = validBattles.filter((data) => data.enemy_clan.tag === clan.tag && data.type === 'TOURNAMENT_BATTLE_LOST').length;
     clan_results[clan.tag] = {
-      "id": clan.id,
       "wins": wins,
-      "losts": losts
+      "losts": losts,
+      "detail": detail
     };
-  })
+  }
+  
 }
-    
+// Testing
+// getData2()
+
 app.get('/', function(req, res) {
   return getData2().then(function(rep) {
     fs.writeFile('./clan_results.json', JSON.stringify(clan_results, null, 2))

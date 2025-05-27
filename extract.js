@@ -154,10 +154,10 @@ const getData2 = async function() {
 
   //Injection leaderboard
   //Test 
-  //const results = []
+  // const results = []
   results.push(`
     <table style="display: inline-block; vertical-align: top; margin-left: 20px; text-align: center;">
-      <tr><th>Tag</th><th>Victoires</th><th>Défaites</th></tr>
+      <tr><th>[Cote/Tag/#ba/win]</th><th>Victoires</th><th>Défaites</th><th>Status</th></tr>
   `);
 
   function getColorPwin(pwin) {
@@ -172,10 +172,11 @@ const getData2 = async function() {
 
   _.forEach(clan_results, (clan, tag) => {    
     results.push(`
-      <tr style='border: 1; color: ${getColorPwin(clan.wins / (clan.wins + clan.losts) * 100)}' >
-        <td>[<a style='color: unset;' target='_blank' href='https://eu.wargaming.net/clans/wot/${clan.id}'> ${tag}</a>]</td>
+      <tr style='border: 1;' >
+        <td>${displayLink(clan.detail.elo_rating_10, clan.detail.tag, clan.detail.id, false, clan.detail.battles_count_10, clan.detail.wins_percent_10)}</td>
         <td>${clan.wins}</td>
         <td>${clan.losts}</td>
+        <td style='color: ${getColorPwin(clan.wins / (clan.wins + clan.losts) * 100)};'>***</td>
       </tr>
     `);
   })
