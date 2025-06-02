@@ -62,22 +62,42 @@ const colors = {
   '21:00:00true': '#cce8cc'
 };
 
+const getColorElo = function(elo) {
+  if (elo <= groutDesc.elo_rating_10) {
+    return "SpringGreen";
+  } else if (elo < groutDesc.elo_rating_10 +100) {
+    return "yellow";
+  } else {
+    return "red";
+  }
+}
 
+const getColorPwin = function(pwin) {
+  if (pwin >= 60) {
+    return "SpringGreen";
+  } else if (pwin >= 10) {
+    return "yellow";
+  } else {
+    return "red";
+  }
+}
+
+const getRisk = function(elo, pwin) {
+  if (getColorElo(elo) === getColorPwin(pwin)) { // Thumb
+    return `<td style="background: ${getColorElo(elo)}">&#128077;</td>`;
+  } else if (getColorPwin(pwin) === "SpringGreen") { // Smiley
+    return `<td style="background: ${getColorPwin(pwin)}">&#128522;</td>`;
+  } else { // Question mark
+    return `<td style="color: ${getColorPwin(pwin)}">&#9888;</td>`;
+  }
+}
 
 const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
   // const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
-  function getColor(elo) {
-    if (elo <= groutDesc.elo_rating_10) {
-      return "SpringGreen";
-    } else if (elo < groutDesc.elo_rating_10 +100) {
-      return "yellow";
-    } else {
-      return "red";
-    }
-  }
 
-  return `[${elo}/<a style='color: ${getColor(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
+
+  return `[${elo}/<a style='color: ${getColorElo(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
 };
 
 const getInfo = async function(prov) {
@@ -123,6 +143,14 @@ const delay = function () {
 //   <table style=\"display: inline-block; vertical-align: top;\">
 const getData2 = async function() {
   const a = `
+  <head>
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
+  </head>
   <div style=" font-size: 20px; font-weight: bold;">
   ${groutDesc.tag} - ${groutDesc.elo_rating_10}  / ${groutDesc.battles_count_10} / ${groutDesc.wins_percent_10} --  ${(new Date()).toLocaleTimeString()}
   </div>
@@ -151,32 +179,28 @@ const getData2 = async function() {
   }
 
   results.push("</table>");
-
-  //Injection leaderboard
+  // ****************************
+  //     Injection leaderboard
+  // ****************************
   //Test 
   // const results = []
   results.push(`
-    <table style="display: inline-block; vertical-align: top; margin-left: 20px; text-align: center;">
-      <tr><th>[Cote/Tag/#ba/win]</th><th>Victoires</th><th>Défaites</th><th>Status</th></tr>
+    <table style="display: inline-block;
+           vertical-align: top; margin-left: 20px;
+           text-align: center;">
+      <tr><th>[Cote/Tag/#ba/win]</th><th>Victoires</th><th>Défaites</th><th>Status</th><th style="border: 3px solid;">Risque</th></tr>
   `);
 
-  function getColorPwin(pwin) {
-    if (pwin >= 60) {
-      return "SpringGreen";
-    } else if (pwin >= 10) {
-      return "yellow";
-    } else {
-      return "red";
-    }
-  }
+  _.forEach(clan_results, (clan) => {
+    const pwin = clan.wins * 100 / (clan.wins + clan.losts);
 
-  _.forEach(clan_results, (clan, tag) => {    
     results.push(`
-      <tr style='border: 1;' >
+      <tr>
         <td>${displayLink(clan.detail.elo_rating_10, clan.detail.tag, clan.detail.id, false, clan.detail.battles_count_10, clan.detail.wins_percent_10)}</td>
         <td>${clan.wins}</td>
         <td>${clan.losts}</td>
-        <td style='color: ${getColorPwin(clan.wins / (clan.wins + clan.losts) * 100)};'>***</td>
+        <td style='color: ${getColorPwin(pwin)};'>***</td>
+        ${getRisk(clan.detail.elo_rating_10, pwin)}
       </tr>
     `);
   })
