@@ -188,7 +188,7 @@ const getData2 = async function() {
     <table style="display: inline-block;
            vertical-align: top; margin-left: 20px;
            text-align: center;">
-      <tr><th>[Cote/Tag/#ba/win]</th><th>Victoires</th><th>Défaites</th><th>Status</th><th style="border: 3px solid;">Risque</th></tr>
+      <tr><th>[Cote/Tag/#ba/win]</th><th>Victoires</th><th>Défaites</th><th>Status</th><th>Risque</th></tr>
   `);
 
   _.forEach(clan_results, (clan) => {
