@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "scripts": {
+    "postinstall": "emptyfiles.sh"
+  },
   "dependencies": {
     "express": "^5.1.0",
     "got": "^14.4.7",
