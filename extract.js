@@ -106,7 +106,7 @@ const getInfo = async function(prov) {
   let owner = '';
   let Fws = false;
 
-  if (res.owner.id === CLAN_ID) { Fws = true; } // On est proprietaire
+  if (res.owner?.id === CLAN_ID) { Fws = true; } // On est proprietaire
   
   let prets = res.pretenders.map(function(pret) {
     if (pret.tag === 'GR0UT') {
