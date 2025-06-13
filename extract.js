@@ -124,13 +124,14 @@ const getInfo = async function(prov) {
   } else {
     provinces_pret[prov.name] = prets;
   }
-  
   return `
     <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
       <td> <img src='${prov.arena_name.replace(/'/, '')}.png' width="60px" ></img></td>
       <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
       <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
-      <td>${prov.name} ${owner}</td>
+      <td><a target="_blank" 
+               href='https://eu.wargaming.net/globalmap/?utm_campaign=wgcc&utm_medium=link&utm_source=clan_profile_global_map_page#province/${prov.alias}'>${prov.name}
+          <a> ${owner}</td>
       <td>${prets.join('<BR>')}</td>
     </tr>`;
 };
