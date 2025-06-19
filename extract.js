@@ -214,7 +214,7 @@ const getData2 = async function() {
 app.get('/', async function(req, res) {
 //https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8513de3f19bd7fb36e481b706d088c53&clan_id=5001657860
 //const groutDesc = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${CLAN_ID}`).json();
-groutDesc = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8513de3f19bd7fb36e481b706d088c53&clan_id=${CLAN_ID}`).json()).data[CLAN_ID];
+groutDesc = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8482774e9783567fe325f6513cb96a2e&clan_id=${CLAN_ID}`).json()).data[CLAN_ID];
 
   return getData2().then(function(rep) {
     fs.writeFile('./provinces_pret.json', JSON.stringify(provinces_pret, null, 2))
