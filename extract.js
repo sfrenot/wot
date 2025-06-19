@@ -10,8 +10,7 @@ const DELAY = 10;
 
 const app = express();
 const CLAN_ID = 500165786;
-
-const groutDesc = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${CLAN_ID}`).json();
+let groutDesc;
 
 const formatDate = function(date, offset) {
   const heure = String(Number(date.substring(0, 2)) + 2);
@@ -63,9 +62,9 @@ const colors = {
 };
 
 const getColorElo = function(elo) {
-  if (elo <= groutDesc.elo_rating_10) {
+  if (elo <= groutDesc.ratings.elo_10) {
     return "SpringGreen";
-  } else if (elo < groutDesc.elo_rating_10 +100) {
+  } else if (elo < groutDesc.ratings.elo_10 +100) {
     return "yellow";
   } else {
     return "red";
@@ -155,7 +154,7 @@ const getData2 = async function() {
     </style>
   </head>
   <div style=" font-size: 20px; font-weight: bold;">
-  ${groutDesc.tag} - ${groutDesc.elo_rating_10}  / ${groutDesc.battles_count_10} / ${groutDesc.wins_percent_10} --  ${(new Date()).toLocaleTimeString()}
+  ${groutDesc.tag} - ${groutDesc.ratings.elo_10}  / ${groutDesc.statistics.battles_10_level} / ${groutDesc.statistics.wins} --  ${(new Date()).toLocaleTimeString()}
   </div>
   <table style=\"display: inline-block;\">
     <colgroup>
@@ -207,12 +206,16 @@ const getData2 = async function() {
       </tr>
     `);
   })
-  
   results.push("</table>");
+
   return results.join('\n');
 };
 
-app.get('/', function(req, res) {
+app.get('/', async function(req, res) {
+//https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8513de3f19bd7fb36e481b706d088c53&clan_id=5001657860
+//const groutDesc = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${CLAN_ID}`).json();
+groutDesc = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8513de3f19bd7fb36e481b706d088c53&clan_id=${CLAN_ID}`).json()).data[CLAN_ID];
+
   return getData2().then(function(rep) {
     fs.writeFile('./provinces_pret.json', JSON.stringify(provinces_pret, null, 2))
     .then(() => {
