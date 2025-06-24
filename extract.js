@@ -15,14 +15,18 @@ let groutDesc;
 const KEY_API = '8482774e9783567fe325f6513cb96a2e'; // Votre clé API ici
 const front_id = 'season_22_eu'; // ID du front
 
-const formatDate = function(date, offset) {
-  const heure = String(Number(date.substring(0, 2)) + 2);
+// const formatDate = function(date, offset) {
+//   const heure = String(Number(date.substring(0, 2)) + 2);
 
-  if (offset) {
-    return heure + ":15";
-  } else {
-    return heure + ":00";
-  }
+//   if (offset) {
+//     return heure + ":15";
+//   } else {
+//     return heure + ":00";
+//   }
+// };
+const formatDate = function(date) {
+  let [hh, mm] = date.split(/:/)
+  return `${Number(hh)+2}:${mm}`;
 };
 
 const cartes = {
@@ -95,9 +99,6 @@ const getRisk = function(elo, pwin) {
 }
 
 const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
-  // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
-  // const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
-
   return `[${elo}/<a style='color: ${getColorElo(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}%]`;
 };
 
@@ -120,7 +121,8 @@ const getInfo = async function(prov) {
   let Fws = false;
 
   if (prov.owner_clan_id === CLAN_ID) { Fws = true; } // On est proprietaire
-  let prets = await getPretsInfo(prov.attackers);
+
+  const prets = await getPretsInfo(prov.attackers);
 
   if (prov.attackers.length < 32 || Fws) {
     if (prov.owner_clan_id) {
@@ -135,17 +137,18 @@ const getInfo = async function(prov) {
     }
   }
 
-  if (_.isEmpty(prets)) {
-    prets=provinces_pret[prov.name] || [];
-  } else {
-    provinces_pret[prov.name] = prets;
-  }
+  // if (_.isEmpty(prets)) {
+  //   prets=provinces_pret[prov.name] || [];
+  // } else {
+  //   provinces_pret[prov.name] = prets;
+  // }
+  provinces_pret[prov.name] = prets;
 
   return `
     <tr style='background-color: ${colors[prov.prime_time]}'>
       <td> <img src='${prov.arena_name.replace(/'/, '')}.png' width="60px" ></img></td>
       <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
-      <td>${prov.prime_time}</td>
+      <td>${formatDate(prov.prime_time)}</td>
       <td><a target="_blank" 
                href='https://eu.wargaming.net/globalmap/?utm_campaign=wgcc&utm_medium=link&utm_source=clan_profile_global_map_page#province/${prov.province_id}'>${prov.province_name}
           <a> ${owner}</td>
@@ -185,8 +188,9 @@ const getData2 = async function() {
     </tr>
   `;
 
-  const provincesData = await got('https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=8482774e9783567fe325f6513cb96a2e&front_id=season_22_eu').json();
+  const provincesData = await got(`https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=${KEY_API}&front_id=${front_id}`).json();
   const provinces = _.sortBy(provincesData.data, ['battles_start_at', 'attackers.length' ]);
+
   const results = [a];
 
   for (let province of provinces) {
