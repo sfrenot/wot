@@ -12,6 +12,9 @@ const app = express();
 const CLAN_ID = 500165786;
 let groutDesc;
 
+const KEY_API = '8482774e9783567fe325f6513cb96a2e'; // Votre clé API ici
+const front_id = 'season_22_eu'; // ID du front
+
 const formatDate = function(date, offset) {
   const heure = String(Number(date.substring(0, 2)) + 2);
 
@@ -47,18 +50,18 @@ const cartes = {
 
 
 const colors = {
-  '16:00:00false': '#eaff67',
-  '16:00:00true': '#ffca3e',
-  '17:00:00false': '#eaea67',
-  '17:00:00true': '#bdca3e',
-  '18:00:00false': '#7fa3bf',
-  '18:00:00true': '#4e7fa5',
-  '19:00:00false': '#62d867',
-  '19:00:00true': '#c1ec8e',
-  '20:00:00false': '#b1d2b2',
-  '20:00:00true': '#c3d4c3',
-  '21:00:00false': '#99e89c',
-  '21:00:00true': '#cce8cc'
+  '16:00': '#eaff67',
+  '16:15': '#ffca3e',
+  '17:00': '#eaea67',
+  '17:15': '#bdca3e',
+  '18:00': '#7fa3bf',
+  '18:15': '#4e7fa5',
+  '19:00': '#62d867',
+  '19:15': '#c1ec8e',
+  '20:00': '#b1d2b2',
+  '20:15': '#c3d4c3',
+  '21:00': '#99e89c',
+  '21:15': '#cce8cc'
 };
 
 const getColorElo = function(elo) {
@@ -95,29 +98,41 @@ const displayLink = function(elo, tag, id, isRed, battleCount, winPercent) {
   // "[<a href=\"https://eu.wargaming.net/globalmap/game_api/clan/" + id + "\">" + elo + "-" + tag + "</a>]";
   // const redColor = isRed ? "red" : (elo <= groutDesc.elo_rating_10 ? "SpringGreen" : "orangeRed"); 
 
-
-  return `[${elo}/<a style='color: ${getColorElo(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}]`;
+  return `[${elo}/<a style='color: ${getColorElo(elo)}' target='_blank' href='https://eu.wargaming.net/clans/wot/${id}'>${tag}</a>/${battleCount}/${winPercent}%]`;
 };
 
-const getInfo = async function(prov) {
-  const res = await got("https://eu.wargaming.net/globalmap/game_api/tournament_info?alias=" + prov.alias).json()
-  
-  let owner = '';
-  let Fws = false;
-
-  if (res.owner?.id === CLAN_ID) { Fws = true; } // On est proprietaire
-  
-  let prets = res.pretenders.map(function(pret) {
+const getPretsInfo = async function(attackers) {
+  let prets = attackers.map(async function(pret_id) {
+    let pret = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=${KEY_API}&clan_id=${pret_id}`).json()).data[pret_id];
     if (pret.tag === 'GR0UT') {
       Fws = true;
-      return `<b style='color: red'>${displayLink(pret.elo_rating, pret.tag, pret.id, true, pret.arena_battles_count, pret.arena_wins_percent)}</b>`;
+      return `<b style='color: red'>${displayLink(pret.ratings.elo_10, pret.tag, pret.clan_id, true, pret.statistics.battles_10_level, Math.trunc((pret.statistics.wins / pret.statistics.battles)*100))}</b>`;
     } else {
-      return displayLink(pret.elo_rating, pret.tag, pret.id, false, pret.arena_battles_count, pret.arena_wins_percent);
+      return displayLink(pret.ratings.elo_10, pret.tag, pret.clan_id, false, pret.statistics.battles_10_level, Math.trunc((pret.statistics.wins / pret.statistics.battles)*100));
     }
   });
 
-  if (prov.attackers_count < 32 || Fws) {
-    owner = prov.owner ? displayLink(prov.owner.elo_rating_10, prov.owner.tag, prov.owner.id, false, res.owner.arena_battles_count,res.owner.arena_wins_percent) : "";
+  return Promise.all(prets);
+};
+
+const getInfo = async function(prov) {
+  let owner = '';
+  let Fws = false;
+
+  if (prov.owner_clan_id === CLAN_ID) { Fws = true; } // On est proprietaire
+  let prets = await getPretsInfo(prov.attackers);
+
+  if (prov.attackers.length < 32 || Fws) {
+    if (prov.owner_clan_id) {
+      let ownerdetail = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=${KEY_API}&clan_id=${prov.owner_clan_id}`).json()).data[prov.owner_clan_id];
+
+      owner = displayLink(ownerdetail.ratings.elo_10, 
+                          ownerdetail.tag, 
+                          ownerdetail.clan_id, 
+                          false, 
+                          ownerdetail.statistics.battles_10_level,
+                          Math.trunc((ownerdetail.statistics.wins / ownerdetail.statistics.battles)*100));
+    }
   }
 
   if (_.isEmpty(prets)) {
@@ -125,13 +140,14 @@ const getInfo = async function(prov) {
   } else {
     provinces_pret[prov.name] = prets;
   }
+
   return `
-    <tr style='background-color: ${colors[prov.primetime + prov.is_battle_offset]}'>
+    <tr style='background-color: ${colors[prov.prime_time]}'>
       <td> <img src='${prov.arena_name.replace(/'/, '')}.png' width="60px" ></img></td>
       <td>${cartes[prov.arena_name].traduction} (${cartes[prov.arena_name].base})</td>
-      <td>${formatDate(prov.primetime, prov.is_battle_offset)}</td>
+      <td>${prov.prime_time}</td>
       <td><a target="_blank" 
-               href='https://eu.wargaming.net/globalmap/?utm_campaign=wgcc&utm_medium=link&utm_source=clan_profile_global_map_page#province/${prov.alias}'>${prov.name}
+               href='https://eu.wargaming.net/globalmap/?utm_campaign=wgcc&utm_medium=link&utm_source=clan_profile_global_map_page#province/${prov.province_id}'>${prov.province_name}
           <a> ${owner}</td>
       <td>${prets.join('<BR>')}</td>
     </tr>`;
@@ -168,16 +184,15 @@ const getData2 = async function() {
       <th></th><th>Carte (Base Verte)</th><th>Heure</th><th>Province</th><th>Attaquants</th>
     </tr>
   `;
-  const provincesData = await got('https://eu.wargaming.net/globalmap/game_api/provinces/filter/season_22_eu/landing\?page_number\=0\&page_size\=290')
-  const provinces = _.sortBy(JSON.parse(provincesData.body).data, ['primetime', 'is_battle_offset', 'attackers_count']);
+
+  const provincesData = await got('https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=8482774e9783567fe325f6513cb96a2e&front_id=season_22_eu').json();
+  const provinces = _.sortBy(provincesData.data, ['battles_start_at', 'attackers.length' ]);
   const results = [a];
 
   for (let province of provinces) {
-    console.log("Rechecherche province " + province.alias);
-    // await delay();
+    console.log("Rechecherche province " + province.province_id);
     const info = await getInfo(province);
     results.push(info);
-    // break;
   }
 
   results.push("</table>");
@@ -212,9 +227,7 @@ const getData2 = async function() {
 };
 
 app.get('/', async function(req, res) {
-//https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8513de3f19bd7fb36e481b706d088c53&clan_id=5001657860
-//const groutDesc = await got(`https://eu.wargaming.net/globalmap/game_api/clan/${CLAN_ID}`).json();
-groutDesc = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=8482774e9783567fe325f6513cb96a2e&clan_id=${CLAN_ID}`).json()).data[CLAN_ID];
+groutDesc = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=${KEY_API}&clan_id=${CLAN_ID}`).json()).data[CLAN_ID];
 
   return getData2().then(function(rep) {
     fs.writeFile('./provinces_pret.json', JSON.stringify(provinces_pret, null, 2))
