@@ -54,13 +54,13 @@ const cartes = {
 
 
 const colors = {
-  '16:00': '#eaff67',
+  '16:00': '#eacc67',
   '16:15': '#ffca3e',
-  '17:00': '#eaea67',
+  '17:00': '#eaca67',
   '17:15': '#bdca3e',
   '18:00': '#7fa3bf',
   '18:15': '#4e7fa5',
-  '19:00': '#62d867',
+  '19:00': '#62c867',
   '19:15': '#c1ec8e',
   '20:00': '#b1d2b2',
   '20:15': '#c3d4c3',
@@ -72,7 +72,7 @@ const getColorElo = function(elo) {
   if (elo <= groutDesc.ratings.elo_10) {
     return "SpringGreen";
   } else if (elo < groutDesc.ratings.elo_10 +100) {
-    return "yellow";
+    return "Yellow"; //Jaune
   } else {
     return "red";
   }
@@ -82,7 +82,7 @@ const getColorPwin = function(pwin) {
   if (pwin >= 60) {
     return "SpringGreen";
   } else if (pwin >= 10) {
-    return "yellow";
+    return "Yellow";
   } else {
     return "red";
   }
@@ -122,27 +122,32 @@ const getInfo = async function(prov) {
 
   if (prov.owner_clan_id === CLAN_ID) { Fws = true; } // On est proprietaire
 
-  const prets = await getPretsInfo(prov.attackers);
+  let prets = await getPretsInfo(prov.attackers);
 
-  if (prov.attackers.length < 32 || Fws) {
-    if (prov.owner_clan_id) {
-      let ownerdetail = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=${KEY_API}&clan_id=${prov.owner_clan_id}`).json()).data[prov.owner_clan_id];
+  // if (prov.attackers.length < 32 || Fws) {
+  if (prov.owner_clan_id) {
+    let ownerdetail = (await got(`https://api.worldoftanks.eu/wot/globalmap/claninfo/?application_id=${KEY_API}&clan_id=${prov.owner_clan_id}`).json()).data[prov.owner_clan_id];
 
-      owner = displayLink(ownerdetail.ratings.elo_10, 
-                          ownerdetail.tag, 
-                          ownerdetail.clan_id, 
-                          false, 
-                          ownerdetail.statistics.battles_10_level,
-                          Math.trunc((ownerdetail.statistics.wins / ownerdetail.statistics.battles)*100));
-    }
+    owner = displayLink(ownerdetail.ratings.elo_10, 
+                        ownerdetail.tag, 
+                        ownerdetail.clan_id, 
+                        false, 
+                        ownerdetail.statistics.battles_10_level,
+                        Math.trunc((ownerdetail.statistics.wins / ownerdetail.statistics.battles)*100));
   }
+  // }
 
   // if (_.isEmpty(prets)) {
   //   prets=provinces_pret[prov.name] || [];
   // } else {
   //   provinces_pret[prov.name] = prets;
   // }
-  provinces_pret[prov.name] = prets;
+  const heure = new Date().getHours()
+  if (heure >= 18 && heure <= 23 && _.isEmpty(prets)) {
+    prets=provinces_pret[prov.name] || [];
+  } else {
+    provinces_pret[prov.name] = prets;
+  }
 
   return `
     <tr style='background-color: ${colors[prov.prime_time]}'>
@@ -156,12 +161,7 @@ const getInfo = async function(prov) {
     </tr>`;
 };
 
-const delay = function () {
-  return new Promise(function(res) {
-    return setTimeout(res, DELAY);
-  });
-};
-//   <table style=\"display: inline-block; vertical-align: top;\">
+
 const getData2 = async function() {
   const a = `
   <head>
@@ -188,8 +188,8 @@ const getData2 = async function() {
     </tr>
   `;
 
-  const provincesData = await got(`https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=${KEY_API}&front_id=${front_id}`).json();
-  const provinces = _.sortBy(provincesData.data, ['battles_start_at', 'attackers.length' ]);
+  const provincesData = (await got(`https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=${KEY_API}&front_id=${front_id}`).json()).data;
+  const provinces = _.sortBy(provincesData, ['battles_start_at', 'attackers.length' ]);
 
   const results = [a];
 
