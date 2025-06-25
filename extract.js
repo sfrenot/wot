@@ -219,7 +219,7 @@ const getData2 = async function() {
     const pwin = clan.wins * 100 / (clan.wins + clan.losts);
 
     results.push(`
-      <tr>
+      <tr style="background-color: #89CFF0;">
         <td>${displayLink(clan.detail.elo_rating_10, clan.detail.tag, clan.detail.id, false, clan.detail.battles_count_10, clan.detail.wins_percent_10)}</td>
         <td>${clan.wins}</td>
         <td>${clan.losts}</td>
