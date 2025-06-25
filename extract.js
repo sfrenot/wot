@@ -192,7 +192,7 @@ const getData2 = async function() {
   `;
 
   const provincesData = (await got(`https://api.worldoftanks.eu/wot/globalmap/provinces/?application_id=${KEY_API}&front_id=${front_id}`).json()).data;
-  const provinces = _.sortBy(provincesData, ['battles_start_at', 'attackers.length' ]);
+  const provinces = _.sortBy(provincesData, ['prime_time', 'attackers.length' ]);
 
   const results = [a];
 
