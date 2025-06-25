@@ -1,5 +1,6 @@
 "use strict";
 import express from 'express';
+import fssync from 'fs';
 import got from 'got';
 import _ from 'lodash';
 import fs from 'fs/promises';
@@ -12,7 +13,9 @@ const app = express();
 const CLAN_ID = 500165786;
 let groutDesc;
 
-const KEY_API = '8482774e9783567fe325f6513cb96a2e'; // Votre clé API ici
+
+const KEY_API = fssync.readFileSync("./key.wot", 'utf8')
+
 const front_id = 'season_22_eu'; // ID du front
 
 // const formatDate = function(date, offset) {
