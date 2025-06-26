@@ -12,7 +12,7 @@ const DELAY = 10;
 const app = express();
 const CLAN_ID = 500165786;
 let groutDesc;
-
+let Fws = false;
 
 const KEY_API = fssync.readFileSync("./key.wot", 'utf8')
 
@@ -121,7 +121,7 @@ const getPretsInfo = async function(attackers) {
 
 const getInfo = async function(prov) {
   let owner = '';
-  let Fws = false;
+  Fws = false;
 
   if (prov.owner_clan_id === CLAN_ID) { Fws = true; } // On est proprietaire
 
