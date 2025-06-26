@@ -8,7 +8,7 @@ import clan_results from './clan_results.json' with { type: "json" };
 const app = express();
 
 const getData2 = async function() {
-  const history = await got('https://eu.wargaming.net/globalmap/game_api/clan/500165786/log?category=all&page_size=30000000').json();
+  const history = await got('https://eu.wargaming.net/globalmap/game_api/clan/500165786/log?category=all&page_size=300').json();
   const validBattles = history.data
                     .filter(function(b) { return b.type !== "LANDING_BET_CANCELLED" && b.type !== "LANDING_BET_CREATED" })
 
