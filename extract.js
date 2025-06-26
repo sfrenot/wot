@@ -146,7 +146,7 @@ const getInfo = async function(prov) {
   //   provinces_pret[prov.name] = prets;
   // }
   const heure = new Date().getHours()
-  if (heure >= 18 && heure <= 23 && _.isEmpty(prets)) {
+  if ((heure >= 18 && heure <= 23) && _.isEmpty(prov.attackers)) {
     prets=provinces_pret[prov.name] || [];
   } else {
     provinces_pret[prov.name] = prets;
